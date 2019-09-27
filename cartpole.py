@@ -10,10 +10,9 @@ import random
 import gym
 import numpy as np
 from collections import deque
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from keras.layers import Dense
 from keras.optimizers import Adam
-
 
 ENV_NAME = "CartPole-v1"
 
@@ -25,7 +24,7 @@ BATCH_SIZE = 20
 
 EXPLORATION_MAX = 1.0
 EXPLORATION_MIN = 0.01
-EXPLORATION_DECAY = 0.995
+EXPLORATION_DECAY = 0.999
 
 
 class DQNSolver:
@@ -67,12 +66,14 @@ class DQNSolver:
 
 
 def cartpole():
+    trialScore = np.array([])
     env = gym.make(ENV_NAME)
     observation_space = env.observation_space.shape[0]
     action_space = env.action_space.n
     dqn_solver = DQNSolver(observation_space, action_space)
     run = 0
-    while True:
+    success = False
+    while success == False:
         run += 1
         state = env.reset()
         state = np.reshape(state, [1, observation_space])
@@ -88,8 +89,17 @@ def cartpole():
             state = state_next
             if terminal:
                 print ("Run: " + str(run) + ", exploration: " + str(dqn_solver.exploration_rate) + ", score: " + str(step))
+                trialScore = np.append(trialScore, step)
+                if trialScore.size > 100:
+                    np.delete(trialScore, 0)
+                    print("Average score: " + str(np.average(trialScore)))
+                    if np.average(trialScore) > 195:
+                        print ("Success!")
+                        success = True
                 break
             dqn_solver.experience_replay()
+    env.close()
+    dqn_solver.model.save('my_model.h5')
 
 
 if __name__ == "__main__":
