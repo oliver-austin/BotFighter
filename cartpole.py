@@ -66,11 +66,13 @@ class DQNSolver:
 
 
 def cartpole():
+
     trialScore = np.array([])
     env = gym.make(ENV_NAME)
     observation_space = env.observation_space.shape[0]
     action_space = env.action_space.n
     dqn_solver = DQNSolver(observation_space, action_space)
+    dqn_solver.model.save('my_model.h5')
     run = 0
     success = False
     while success == False:
@@ -93,7 +95,7 @@ def cartpole():
                 if trialScore.size > 100:
                     np.delete(trialScore, 0)
                     print("Average score: " + str(np.average(trialScore)))
-                    if np.average(trialScore) > 195:
+                    if np.average(trialScore) > 100:
                         print ("Success!")
                         success = True
                 break
