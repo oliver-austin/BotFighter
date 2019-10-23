@@ -7,7 +7,6 @@ import retro
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.optimizers import Adam
-
 from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
@@ -17,8 +16,6 @@ ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 def main():
     env = retro.make(game=ENV_NAME, state='rom.state', use_restricted_actions=retro.Actions.DISCRETE)
     nb_actions = env.action_space.n
-    print (nb_actions)
-
     model = Sequential()
     model.add(Flatten(input_shape=(1,) + env.observation_space.shape))
     model.add(Dense(16))
