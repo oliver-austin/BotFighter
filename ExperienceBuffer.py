@@ -1,8 +1,11 @@
+"""This buffer class was adapted from the following tutorial:
+https://towardsdatascience.com/deep-reinforcement-learning-tutorial-with-open-ai-gym-c0de4471f368
+An original implementation will be used in the final product."""
+
 import numpy as np
 import random
 from collections import deque
 
-"""This buffer class was adapted from the following tutorial: """
 
 class ExperienceBuffer:
     def __init__(self, size):

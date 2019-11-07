@@ -4,13 +4,14 @@ import numpy as np
 import gym
 import retro
 #import h5py
+
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.optimizers import Adam
 from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
-
+import tensorflow as tf
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 
 def main():
@@ -26,7 +27,11 @@ def main():
     model.add(Activation('relu'))
     model.add(Dense(nb_actions))
     model.add(Activation('linear'))
-
+    print(model.output)
+    for layer in model.layers:
+        print(layer.output_shape)
+    for layer in model.layers:
+        print(layer.input_shape)
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
 
