@@ -3,7 +3,8 @@ sys.path.append("C:/Users/Oliver/Anaconda3/envs/gym/Lib/site-packages")
 import numpy as np
 import gym
 import retro
-#import h5py
+import h5py
+import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten
 from keras.optimizers import Adam
@@ -34,8 +35,11 @@ def main():
                    target_model_update=1e-2, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
-    dqn.fit(env, nb_steps=50000, visualize=True, verbose=2)
-
+    training_history = dqn.fit(env, nb_steps=50000, visualize=True, verbose=2)
+    episode_reward = training_history.history['episode_reward']
+    plt.plot(episode_reward)
+    plt.ylabel('episode reward')
+    plt.show()
     dqn.save_weights('dqn_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
 
     dqn.test(env, nb_episodes=5, visualize=True)
