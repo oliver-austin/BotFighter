@@ -13,9 +13,9 @@ The default value gives a reward based on the player's score.
 To reward based on the difference in player's health, paste the following in the reward>variables object in the
 scenario file located at: site-packages/retro/data/stable/stable/StreetFighterIISpecialChampionEdition-Genesis/scenario.json
 
-      "health": {
-        "reward": 1.0
-      },
-      "enemy_health": {
-        "reward": -1.0
-      }
+    "health": {
+        "penalty": 1.0
+    },
+    "enemy_health": {
+        "penalty": -1.0
+    }
