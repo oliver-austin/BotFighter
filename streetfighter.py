@@ -33,31 +33,50 @@ def main():
     policy = BoltzmannQPolicy()
 
     # Uncomment the following line to load the model weights from file
-    #model.load_weights('dqn_{}_weights.h5f'.format(ENV_NAME))
+    model.load_weights('dqn_{}_weights.h5f'.format(ENV_NAME))
     dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=1000,
                    target_model_update=1e-3, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
-    training_history = dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, action_repetition=4)
+    training_history = dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, action_repetition=4)
     plot_training_results(training_history)
 
     # Uncomment the following line to overwrite the model weights file after training
-    #dqn.save_weights('dqn_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
-    dqn.test(env, nb_episodes=5, visualize=True)
+    dqn.save_weights('dqn_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
+    dqn.test(env, nb_episodes=5, visualize=False)
 
 
 def plot_training_results(training_history):
-    episode_reward = np.array(training_history.history['episode_reward'])
-    episodes = np.unique(np.arange(episode_reward.size))
+    session_reward = np.array(training_history.history['episode_reward'])
+    session_episodes = np.arange(session_reward.size)
 
-    m = (((np.mean(episodes) * np.mean(episode_reward)) - np.mean(episodes * episode_reward)) /
-         ((np.mean(episodes) * np.mean(episodes)) - np.mean(episodes * episodes)))
-    b = np.mean(episode_reward) - m * np.mean(episodes)
-    regression_line = (m * episodes) + b
+    overall_reward = np.load('reward_history.npy')
+    overall_reward = np.concatenate((overall_reward, session_reward))
+    np.save('reward_history.npy', session_reward)  # save
 
-    plt.scatter(episodes, episode_reward)
-    plt.plot(episodes, regression_line)
+    session_regression_line = calculate_regression_line(session_episodes, session_reward)
+
+    plt.scatter(session_episodes, session_reward)
+    plt.plot(session_episodes, session_regression_line)
+    plt.title('training session results')
     plt.ylabel('episode reward')
     plt.show()
+
+    overall_episodes = np.arange(overall_reward.size)
+    overall_regression_line = calculate_regression_line(overall_episodes, overall_reward)
+
+    plt.scatter(overall_episodes, overall_reward)
+    plt.plot(overall_episodes, overall_regression_line)
+    plt.title('overall training results')
+    plt.ylabel('episode reward')
+    plt.show()
+
+
+def calculate_regression_line(episodes, rewards):
+    slope = (((np.mean(episodes) * np.mean(rewards)) - np.mean(episodes * rewards)) /
+         ((np.mean(episodes) * np.mean(episodes)) - np.mean(episodes * episodes)))
+    intercept = np.mean(rewards) - slope * np.mean(episodes)
+    regression_line = (slope * episodes) + intercept
+    return regression_line
 
 
 if __name__ == "__main__":
