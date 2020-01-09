@@ -1,6 +1,7 @@
 import tensorflow as tf
 from trainingMetrics import save_wins
 
+
 class InfoCallback(tf.keras.callbacks.Callback):
     def __init__(self):
         self.player_win = False
