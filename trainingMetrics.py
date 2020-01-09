@@ -2,6 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def calculate_regression_line(episodes, rewards):
+    slope = (((np.mean(episodes) * np.mean(rewards)) - np.mean(episodes * rewards)) /
+         ((np.mean(episodes) * np.mean(episodes)) - np.mean(episodes * episodes)))
+    intercept = np.mean(rewards) - slope * np.mean(episodes)
+    regression_line = (slope * episodes) + intercept
+    return regression_line
+
+
 def plot_reward(training_history):
     session_reward = np.array(training_history.history['episode_reward'])
     session_episodes = np.arange(session_reward.size)
@@ -28,9 +36,7 @@ def plot_reward(training_history):
     plt.show()
 
 
-def calculate_regression_line(episodes, rewards):
-    slope = (((np.mean(episodes) * np.mean(rewards)) - np.mean(episodes * rewards)) /
-         ((np.mean(episodes) * np.mean(episodes)) - np.mean(episodes * episodes)))
-    intercept = np.mean(rewards) - slope * np.mean(episodes)
-    regression_line = (slope * episodes) + intercept
-    return regression_line
+def save_wins(player_win):
+    win_history = np.load('win_history.npy')
+    win_history = np.concatenate((win_history, player_win))
+    np.save('win_history.npy', win_history)

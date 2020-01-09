@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+from trainingMetrics import save_wins
 
 class InfoCallback(tf.keras.callbacks.Callback):
     def __init__(self):
@@ -12,7 +12,4 @@ class InfoCallback(tf.keras.callbacks.Callback):
             self.player_win = False
 
     def on_episode_end(self, episode, logs=None):
-        if self.player_win:
-            print("WIN!!!")
-        else:
-            print("LOSS!!!")
+        save_wins(self.player_win)
