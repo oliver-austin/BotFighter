@@ -54,7 +54,6 @@ def plot_wins():
 
 
 def save_wins(player_win):
-    print(player_win)
     if os.path.exists('win_history.npy'):
         win_history = np.load('win_history.npy')
         win_history = np.concatenate((win_history, [player_win]))

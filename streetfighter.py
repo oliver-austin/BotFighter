@@ -15,7 +15,7 @@ from trainingMetrics import plot_reward, plot_wins
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 
 def main():
-    env = retro.make(game=ENV_NAME, state='BisonVsDhalsim1Star.state', use_restricted_actions=retro.Actions.DISCRETE)
+    env = retro.make(game=ENV_NAME, state='ryu1.state', use_restricted_actions=retro.Actions.DISCRETE)
     nb_actions = env.action_space.n
     model = Sequential()
     model.add(Flatten(input_shape=(1,) + env.observation_space.shape))
