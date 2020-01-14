@@ -10,12 +10,12 @@ from keras.optimizers import Adam
 from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
-from trainingMetrics import plot_reward, plot_wins
+from trainingMetrics import plot_reward, plot_wins, STATE_NAME
 
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 
 def main():
-    env = retro.make(game=ENV_NAME, state='ryu1.state', use_restricted_actions=retro.Actions.DISCRETE)
+    env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
     nb_actions = env.action_space.n
     model = Sequential()
     model.add(Flatten(input_shape=(1,) + env.observation_space.shape))
@@ -32,16 +32,16 @@ def main():
     policy = BoltzmannQPolicy()
 
     # Uncomment the following line to load the model weights from file
-    model.load_weights('dqn_{}_weights.h5f'.format(ENV_NAME))
-    dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10000,
+    model.load_weights('dqn_{}_weights.h5f'.format(STATE_NAME))
+    dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=1000000,
                    target_model_update=1e-3, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
     training_history = dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
     plot_wins()
-    plot_reward(training_history)
+    #plot_reward(training_history)
 
     # Uncomment the following line to overwrite the model weights file after training
-    #dqn.save_weights('dqn_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
+    dqn.save_weights('dqn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
     dqn.test(env, nb_episodes=5, visualize=True)
 
 
