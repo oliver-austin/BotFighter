@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 
+STATE_NAME = 'MBison4.state'
 
 def calculate_regression_line(episodes, rewards):
     slope = (((np.mean(episodes) * np.mean(rewards)) - np.mean(episodes * rewards)) /
@@ -59,4 +60,4 @@ def save_wins(player_win):
         win_history = np.concatenate((win_history, [player_win]))
     else:
         win_history = [player_win]
-    np.save('win_history.npy', win_history)
+    np.save('{}_win_history.npy'.format(STATE_NAME), win_history)
