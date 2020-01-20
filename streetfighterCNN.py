@@ -29,6 +29,7 @@ def main():
     model.add(Activation('linear'))
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
+    print(env.observation_space)
 
     # Uncomment the following line to load the model weights from file
     if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
