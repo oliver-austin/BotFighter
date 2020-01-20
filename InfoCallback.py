@@ -7,9 +7,11 @@ class InfoCallback(tf.keras.callbacks.Callback):
         self.player_win = False
 
     def on_step_end(self, step, logs=None):
-        if (logs['info'])['matches_won'] > (logs['info'])['enemy_matches_won']:
+        if (logs['info'])['matches_won'] == 8:
             self.player_win = True
-        else:
+
+        elif (logs['info'])['matches_won'] == 0 and self.player_win is True:
+            save_wins(self.player_win)
             self.player_win = False
 
     def on_episode_end(self, episode, logs=None):
