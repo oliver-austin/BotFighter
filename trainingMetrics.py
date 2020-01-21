@@ -9,6 +9,10 @@ def calculate_regression_line(episodes, rewards):
     slope = (((np.mean(episodes) * np.mean(rewards)) - np.mean(episodes * rewards)) /
          ((np.mean(episodes) * np.mean(episodes)) - np.mean(episodes * episodes)))
     intercept = np.mean(rewards) - slope * np.mean(episodes)
+
+    print("slope ", slope)
+    print("intercept ", intercept)
+    
     regression_line = (slope * episodes) + intercept
     return regression_line
 

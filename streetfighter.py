@@ -33,10 +33,11 @@ def main():
 
     # Uncomment the following line to load the model weights from file
     model.load_weights('dqn_{}_weights.h5f'.format(STATE_NAME))
-    dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=1000000,
+    dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=1000,
                    target_model_update=1e-3, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
-    training_history = dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
+    training_history = dqn.fit(env, nb_steps=3500, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
+    print("plotting wins")
     plot_wins()
     #plot_reward(training_history)
 
