@@ -2,12 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 
-STATE_NAME = 'MBison4.state'
+STATE_NAME = 'ryu1.state'
 
 def calculate_regression_line(episodes, rewards):
     slope = (((np.mean(episodes) * np.mean(rewards)) - np.mean(episodes * rewards)) /
          ((np.mean(episodes) * np.mean(episodes)) - np.mean(episodes * episodes)))
     intercept = np.mean(rewards) - slope * np.mean(episodes)
+
+    print("slope ", slope)
+    print("intercept ", intercept)
+    
     regression_line = (slope * episodes) + intercept
     return regression_line
 
@@ -38,8 +42,8 @@ def plot_reward(training_history):
 
 
 def plot_wins():
-    if os.path.exists('win_history.npy'):
-        win_history = np.load('win_history.npy')
+    if os.path.exists('win_history.{}.npy'.format(STATE_NAME)):
+        win_history = np.load('win_history.{}.npy'.format(STATE_NAME))
         matches = np.arange(win_history.size)
         regression_line = calculate_regression_line(matches, win_history)
 
@@ -55,9 +59,10 @@ def plot_wins():
 
 
 def save_wins(player_win):
-    if os.path.exists('win_history.npy'):
-        win_history = np.load('win_history.npy')
+    if os.path.exists('win_history.{}.npy'.format(STATE_NAME)):
+        win_history = np.load('win_history.{}.npy'.format(STATE_NAME))
         win_history = np.concatenate((win_history, [player_win]))
     else:
         win_history = [player_win]
     np.save('{}_win_history.npy'.format(STATE_NAME), win_history)
+
