@@ -45,7 +45,6 @@ class BoltzmannQPolicyTest(Policy):
         exp_values = np.exp(np.clip(q_values / self.tau, self.clip[0], self.clip[1]))
         probs = exp_values / np.sum(exp_values)
         action = np.random.choice(range(nb_actions), p=probs)
-        print(self.tau)
         return action
 
     def get_config(self):
