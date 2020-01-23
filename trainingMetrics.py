@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 
-STATE_NAME = 'MBison4.state'
+STATE_NAME = 'ryu1.state'
 
 
 def calculate_regression_line(episodes, rewards):

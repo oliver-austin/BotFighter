@@ -24,7 +24,7 @@ class BoltzmannQPolicyTest(Policy):
     Boltzmann Q Policy builds a probability law on q values and returns
     an action selected randomly according to this law.
     """
-    def __init__(self, tau=1., clip=(-500., 500.)):
+    def __init__(self, tau=1, clip=(-500., 500.)):
         super(BoltzmannQPolicyTest, self).__init__()
         self.tau = tau
         self.clip = clip

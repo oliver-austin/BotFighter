@@ -17,7 +17,6 @@ from rl.memory import SequentialMemory
 from trainingMetrics import plot_reward, plot_wins, STATE_NAME
 
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
-STATE_NAME = 'ryu1.state'
 
 def main(mode):
     env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
@@ -62,19 +61,6 @@ def main(mode):
     policy = BoltzmannQPolicy()
     test_policy = BoltzmannQPolicyTest()
 
-
-    '''
-    model = Sequential()
-    model.add(Conv2D(32, kernel_size=(8, 8), strides=4, activation="relu", input_shape=(1,) + (128, 100), data_format='channels_first'))
-    model.add(Conv2D(64, kernel_size=(4, 4), strides=2, activation="relu"))
-    model.add(Conv2D(64, (3, 3), activation="relu"))
-    model.add(Flatten())
-    model.add(Dense(512, activation="relu"))
-    model.add(Dense(nb_actions))
-    model.add(Activation('linear'))
-    memory = SequentialMemory(limit=50000, window_length=1)
-    policy = BoltzmannQPolicy()
-    '''
     # print(env.observation_space)
 
     if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
