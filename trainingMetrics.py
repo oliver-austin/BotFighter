@@ -60,7 +60,7 @@ def plot_wins(mode):
 
 def save_wins(player_win, mode):
     if os.path.exists('win-history/{}_win_history_{}.npy'.format(STATE_NAME, mode)):
-        win_history = np.load('{}_win_history_{}.npy'.format(STATE_NAME, mode))
+        win_history = np.load('win-history/{}_win_history_{}.npy'.format(STATE_NAME, mode))
         win_history = np.concatenate((win_history, [player_win]))
     else:
         win_history = [player_win]
