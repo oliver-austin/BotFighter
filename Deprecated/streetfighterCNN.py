@@ -3,7 +3,7 @@ sys.path.append("O:\Oliver\Anaconda\envs\gym\Lib\site-packages")
 import retro
 import h5py
 from CNNProcessor import CNNProcessor
-from InfoCallbackTrain import InfoCallbackTrain
+from InfoCallback import InfoCallback
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Conv2D
 from keras.optimizers import Adam
@@ -38,7 +38,7 @@ def main():
                target_model_update=1e-3, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
-    dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
+    dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
     dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
     plot_wins()
     #plot_reward(training_history)

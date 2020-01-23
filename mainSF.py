@@ -5,14 +5,13 @@ import argparse
 import retro
 #import h5py
 from CNNProcessor import CNNProcessor
-from InfoCallbackTest import InfoCallbackTest
-from InfoCallbackTrain import InfoCallbackTrain
+from InfoCallback import InfoCallback
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Conv2D, MaxPooling2D, Dropout
 from keras.optimizers import Adam
 import os.path
 from rl.agents.dqn import DQNAgent
-from rl.policy import BoltzmannQPolicy, BoltzmannQPolicyTest
+from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
 from trainingMetrics import plot_reward, plot_wins, STATE_NAME
 
@@ -59,22 +58,19 @@ def main(mode):
     # number of steps? and policy used for learning
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
-    test_policy = BoltzmannQPolicyTest()
-
-    
 
     if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
         model.load_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
     dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10000,
-               target_model_update=1e-3, policy=policy, test_policy=test_policy)
+               target_model_update=1e-3, policy=policy, test_policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
     if mode == "train":
-        dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
+        dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
         dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
 
     if mode == "test":
-        dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallbackTest()])
+        dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallback()])
     plot_wins(mode)
     #plot_reward(training_history)
 
