@@ -1,22 +1,25 @@
 import sys
-# sys.path.append("O:\Oliver\Anaconda\envs\gym\Lib\site-packages")
+#sys.path.append("O:\Oliver\Anaconda\envs\gym\Lib\site-packages")
+sys.path.append("C:/Users/Oliver/Anaconda3/envs/gym/Lib/site-packages")
+import argparse
 import retro
-import h5py
+#import h5py
 from CNNProcessor import CNNProcessor
-from InfoCallback import InfoCallback
+from InfoCallbackTest import InfoCallbackTest
+from InfoCallbackTrain import InfoCallbackTrain
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Conv2D, MaxPooling2D, Dropout
 from keras.optimizers import Adam
 import os.path
 from rl.agents.dqn import DQNAgent
-from rl.policy import BoltzmannQPolicy
+from rl.policy import BoltzmannQPolicy, BoltzmannQPolicyTest
 from rl.memory import SequentialMemory
 from trainingMetrics import plot_reward, plot_wins, STATE_NAME
 
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 STATE_NAME = 'ryu1.state'
 
-def main():
+def main(mode):
     env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
     nb_actions = env.action_space.n
 
@@ -57,6 +60,7 @@ def main():
     # number of steps? and policy used for learning
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
+    test_policy = BoltzmannQPolicyTest()
 
 
     '''
@@ -73,22 +77,24 @@ def main():
     '''
     # print(env.observation_space)
 
-    # Uncomment the following line to load the model weights from file
     if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
         model.load_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
     dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10000,
-               target_model_update=1e-3, policy=policy)
+               target_model_update=1e-3, policy=policy, test_policy=test_policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
-    dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
-    dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
-    plot_wins()
+    if mode == "train":
+        dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
+        dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
+
+    if mode == "test":
+        dqn.test(env, nb_episodes=5, visualize=True, callbacks=[InfoCallbackTest()])
+    plot_wins(mode)
     #plot_reward(training_history)
-
-    # Uncomment the following line to overwrite the model weights file after training
-
-    dqn.test(env, nb_episodes=5, visualize=True)
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', help='train or test')
+    args = parser.parse_args()
+    main(args.mode)
