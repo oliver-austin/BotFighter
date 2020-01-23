@@ -15,6 +15,8 @@ scenario file located at: site-packages/retro/data/stable/stable/StreetFighterII
     "enemy_health": {
         "penalty": -1.0
     }
+    
+Note that in the infocallbacktrain and infocallback test files the value that measures a win will be 2 for Ted and 8 for everyone else. If this value is not adjusted wins will be measured incorrectly. 
 
 To properly enable testing, paste the following snippet into: Lib\site-packages\rl\policy.py
 
