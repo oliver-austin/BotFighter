@@ -14,7 +14,6 @@ from rl.memory import SequentialMemory
 from trainingMetrics import plot_reward, plot_wins, STATE_NAME
 
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
-STATE_NAME = 'ryu1.state'
 
 def main():
     env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
@@ -32,14 +31,14 @@ def main():
     print(env.observation_space)
 
     # Uncomment the following line to load the model weights from file
-    if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
-        model.load_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
+    if os.path.exists('./weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
+        model.load_weights('./weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
     dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10000,
                target_model_update=1e-3, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
     dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
-    dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
+    dqn.save_weights('./weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
     plot_wins()
     #plot_reward(training_history)
 

@@ -59,15 +59,15 @@ def main(mode):
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
 
-    if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
-        model.load_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
+    if os.path.exists('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
+        model.load_weights('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
     dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10000,
                target_model_update=1e-3, policy=policy, test_policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
     if mode == "train":
         dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
-        dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
+        dqn.save_weights('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
 
     if mode == "test":
         dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallback()])

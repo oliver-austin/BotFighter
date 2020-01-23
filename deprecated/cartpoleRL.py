@@ -40,7 +40,7 @@ dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
 dqn.fit(env, nb_steps=50000, visualize=True, verbose=2, nb_max_episode_steps=500, callbacks=average_reward(memory.terminals, trial_score))
 
-dqn.save_weights('dqn_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
+dqn.save_weights('./weights/dqn_{}_weights.h5f'.format(ENV_NAME), overwrite=True)
 
 dqn.test(env, nb_episodes=5, visualize=True)
 
