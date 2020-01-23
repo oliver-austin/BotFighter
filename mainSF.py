@@ -61,7 +61,7 @@ def main(mode):
     policy = BoltzmannQPolicy()
     test_policy = BoltzmannQPolicyTest()
 
-    # print(env.observation_space)
+    
 
     if os.path.exists('dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
         model.load_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
@@ -74,7 +74,7 @@ def main(mode):
         dqn.save_weights('dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
 
     if mode == "test":
-        dqn.test(env, nb_episodes=5, visualize=True, callbacks=[InfoCallbackTest()])
+        dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallbackTest()])
     plot_wins(mode)
     #plot_reward(training_history)
 

@@ -2,7 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 
-STATE_NAME = 'ryu1.state'
+STATE_NAME = 'Champion.Level1.RyuVsGuile.state'
+#STATE_NAME = 'ryu1.state'
+# STATE_NAME = 'ryu8.state'
+
 
 
 def calculate_regression_line(episodes, rewards):
