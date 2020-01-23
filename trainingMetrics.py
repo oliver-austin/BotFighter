@@ -2,7 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 
-STATE_NAME = 'ryu1.state'
+STATE_NAME = 'Champion.Level1.RyuVsGuile.state'
+#STATE_NAME = 'ryu1.state'
+# STATE_NAME = 'ryu8.state'
+
 
 
 def calculate_regression_line(episodes, rewards):
@@ -38,9 +41,9 @@ def plot_reward(training_history):
     plt.show()
 
 
-def plot_wins():
-    if os.path.exists('win_history.{}.npy'.format(STATE_NAME)):
-        win_history = np.load('win_history.{}.npy'.format(STATE_NAME))
+def plot_wins(mode):
+    if os.path.exists('{}_win_history_{}.npy'.format(STATE_NAME, mode)):
+        win_history = np.load('{}_win_history_{}.npy'.format(STATE_NAME, mode))
         matches = np.arange(win_history.size)
         regression_line = calculate_regression_line(matches, win_history)
 
@@ -48,17 +51,17 @@ def plot_wins():
         plt.plot(matches, regression_line)
         plt.yticks([1.0, 0.0], ["True",
                                 "False"])
-        plt.title('training results')
+        plt.title('match results')
         plt.ylabel('win')
         plt.xlabel('match number')
         plt.text(0, 0.5, "Win percentile: {}%".format(100*sum(win_history)/win_history.size))
         plt.show()
 
 
-def save_wins(player_win):
-    if os.path.exists('win_history.{}.npy'.format(STATE_NAME)):
-        win_history = np.load('win_history.{}.npy'.format(STATE_NAME))
+def save_wins(player_win, mode):
+    if os.path.exists('{}_win_history_{}.npy'.format(STATE_NAME, mode)):
+        win_history = np.load('{}_win_history_{}.npy'.format(STATE_NAME, mode))
         win_history = np.concatenate((win_history, [player_win]))
     else:
         win_history = [player_win]
-    np.save('win_history.{}.npy'.format(STATE_NAME), win_history)
+    np.save('{}_win_history_{}.npy'.format(STATE_NAME, mode), win_history)
