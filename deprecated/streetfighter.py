@@ -32,7 +32,7 @@ def main():
     policy = BoltzmannQPolicy()
 
     # Uncomment the following line to load the model weights from file
-    model.load_weights('dqn_{}_weights.h5f'.format(STATE_NAME))
+    model.load_weights('./weights/dqn_{}_weights.h5f'.format(STATE_NAME))
     dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=1000000,
                    target_model_update=1e-3, policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
@@ -41,7 +41,7 @@ def main():
     #plot_reward(training_history)
 
     # Uncomment the following line to overwrite the model weights file after training
-    dqn.save_weights('dqn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
+    dqn.save_weights('./weights/dqn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
     dqn.test(env, nb_episodes=5, visualize=True)
 
 

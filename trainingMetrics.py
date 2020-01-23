@@ -42,8 +42,8 @@ def plot_reward(training_history):
 
 
 def plot_wins(mode):
-    if os.path.exists('{}_win_history_{}.npy'.format(STATE_NAME, mode)):
-        win_history = np.load('{}_win_history_{}.npy'.format(STATE_NAME, mode))
+    if os.path.exists('win-history/{}_win_history_{}.npy'.format(STATE_NAME, mode)):
+        win_history = np.load('win-history/{}_win_history_{}.npy'.format(STATE_NAME, mode))
         matches = np.arange(win_history.size)
         regression_line = calculate_regression_line(matches, win_history)
 
@@ -59,9 +59,9 @@ def plot_wins(mode):
 
 
 def save_wins(player_win, mode):
-    if os.path.exists('{}_win_history_{}.npy'.format(STATE_NAME, mode)):
+    if os.path.exists('win-history/{}_win_history_{}.npy'.format(STATE_NAME, mode)):
         win_history = np.load('{}_win_history_{}.npy'.format(STATE_NAME, mode))
         win_history = np.concatenate((win_history, [player_win]))
     else:
         win_history = [player_win]
-    np.save('{}_win_history_{}.npy'.format(STATE_NAME, mode), win_history)
+    np.save('win-history/{}_win_history_{}.npy'.format(STATE_NAME, mode), win_history)
