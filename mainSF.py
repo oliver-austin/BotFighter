@@ -5,7 +5,8 @@ import argparse
 import retro
 #import h5py
 from CNNProcessor import CNNProcessor
-from InfoCallback import InfoCallback
+from InfoCallbackTrain import InfoCallbackTrain
+from InfoCallbackTest import InfoCallbackTest
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Conv2D, MaxPooling2D, Dropout
 from keras.optimizers import Adam
@@ -66,11 +67,11 @@ def main(mode):
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
     if mode == "train":
-        dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallback()], action_repetition=4)
+        dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
         dqn.save_weights('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
 
     if mode == "test":
-        dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallback()])
+        dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallbackTest()])
     plot_wins(mode)
     #plot_reward(training_history)
 
