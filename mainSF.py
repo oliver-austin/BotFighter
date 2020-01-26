@@ -60,18 +60,27 @@ def main(mode):
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
 
-    if os.path.exists('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)):
-        model.load_weights('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME))
-    dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=10000,
+    WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)
+
+    print("State: ", STATE_NAME)
+
+    if os.path.exists(WEIGHT_PATH):
+        print("Loading weights from: ", WEIGHT_PATH, '\n')
+        model.load_weights(WEIGHT_PATH)
+    else:
+        print("No weights found for current state.\n")
+
+    dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=2500,
                target_model_update=1e-3, policy=policy, test_policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
 
     if mode == "train":
-        dqn.fit(env, nb_steps=1000000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
-        dqn.save_weights('weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME), overwrite=True)
+        dqn.fit(env, nb_steps=3000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
+        dqn.save_weights(WEIGHT_PATH, overwrite=True)
 
     if mode == "test":
-        dqn.test(env, nb_episodes=10, visualize=True, callbacks=[InfoCallbackTest()])
+        dqn.test(env, nb_episodes=3, visualize=True, callbacks=[InfoCallbackTest()])
+    
     plot_wins(mode)
     #plot_reward(training_history)
 

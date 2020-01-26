@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os.path
 
-STATE_NAME = 'Champion.Level1.RyuVsGuile.state'
-#STATE_NAME = 'ryu1.state'
+#STATE_NAME = 'Champion.Level1.RyuVsGuile.state'
+STATE_NAME = 'ryu4.state'
 # STATE_NAME = 'ryu8.state'
 
 
@@ -51,7 +51,7 @@ def plot_wins(mode):
         plt.plot(matches, regression_line)
         plt.yticks([1.0, 0.0], ["True",
                                 "False"])
-        plt.title('match results')
+        plt.title('match results: {}'.format(STATE_NAME))
         plt.ylabel('win')
         plt.xlabel('match number')
         plt.text(0, 0.5, "Win percentile: {}%".format(100*sum(win_history)/win_history.size))
