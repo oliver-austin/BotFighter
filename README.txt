@@ -31,3 +31,9 @@ Guile
 Difficulty 4, 5, and 6
 
 Jan27-ryu-guile-456
+
+Specifying number of episodes to train for:
+- To do so the KerasRL core must be customized.
+- Navigate to site-packages/rl/core.py
+- On line 55, add the following parameter to the fit() signature: nb_episodes=None
+- On line 124, change the while loop condition to: while self.step < nb_steps and episode < nb_episodes:
