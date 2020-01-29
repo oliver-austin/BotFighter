@@ -18,10 +18,7 @@ from trainingMetrics import plot_reward, plot_wins, STATE_NAME
 
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 
-def main(mode):
-    env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
-    nb_actions = env.action_space.n
-
+def buildModel(weight_path, num_actions):
     model = Sequential()
     # Conv1 32 32 (3) => 30 30 (32)
     # model.add(Conv2D(32, (3, 3), input_shape=X_shape[1:]))
@@ -53,36 +50,93 @@ def main(mode):
     model.add(Dense(128))
     model.add(Activation('relu'))
     # Dense2 256 => 10
-    model.add(Dense(nb_actions))
+    model.add(Dense(num_actions))
     model.add(Activation('softmax'))
 
     # number of steps? and policy used for learning
     memory = SequentialMemory(limit=50000, window_length=1)
     policy = BoltzmannQPolicy()
 
-    WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)
+    if weight_path != None:
+        model.load_weights(weight_path)
 
-    print("State: ", STATE_NAME)
+    return (model, memory, policy)
 
-    if os.path.exists(WEIGHT_PATH):
-        print("Loading weights from: ", WEIGHT_PATH, '\n')
-        model.load_weights(WEIGHT_PATH)
-    else:
-        print("No weights found for current state.\n")
-
-    dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=2500,
-               target_model_update=1e-3, policy=policy, test_policy=policy)
+def buildAgent(model, memory, policy, num_actions):
+    dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=num_actions, memory=memory, 
+                    nb_steps_warmup=10000, target_model_update=1e-3, policy=policy, test_policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
+    return dqn
+
+def trainModel(env, dqn, state_path, weight_path):
+    dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
+    dqn.save_weights(weight_path, overwrite=True)
+
+def testModel(env, dqn, num_episodes, state_path):
+    dqn.test(env, nb_episodes=num_episodes, visualize=True, callbacks=[InfoCallbackTest()])
+
+def main(mode):
+
+    print("\nState: ", STATE_NAME)
+    
+    env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
+    num_actions = env.action_space.n
 
     if mode == "train":
-        dqn.fit(env, nb_steps=3000, visualize=True, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
-        dqn.save_weights(WEIGHT_PATH, overwrite=True)
+        
+        WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)
 
-    if mode == "test":
-        dqn.test(env, nb_episodes=3, visualize=True, callbacks=[InfoCallbackTest()])
+        if os.path.exists(WEIGHT_PATH):
+            print("Loading weights from: ", WEIGHT_PATH, '\n')
+            (model, memory, policy) = buildModel(WEIGHT_PATH, num_actions)
+        else:
+            print("No weights found for current state.\n")
+            (model, memory, policy) = buildModel(None, num_actions)
+           
+        dqn = buildAgent(model, memory, policy, num_actions)
+        trainModel(env, dqn, STATE_NAME, WEIGHT_PATH)
+        plot_wins(mode)
+
+    elif mode == "test":
+
+        WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)
+
+        if os.path.exists(WEIGHT_PATH):
+            print("Loading weights from: ", WEIGHT_PATH, '\n')
+            (model, memory, policy) = buildModel(WEIGHT_PATH, num_actions)
+        else:
+            print("No weights found for current state.\n")
+            (model, memory, policy) = buildModel(None, num_actions)
+           
+        dqn = buildAgent(model, memory, policy, num_actions)
+        testModel(env, dqn, 100, STATE_NAME)
+        plot_wins(mode)
+
+    elif mode == "testscript":
+        weightTest()
+    else:
+        print("No mode specified")
+
+    #WEIGHT_PATH = 'weights/dqn_cnn_ryu4.state_weights.h5f'.format(STATE_NAME)
     
-    plot_wins(mode)
-    #plot_reward(training_history)
+    
+
+
+def weightTest():
+
+    weight_paths = [
+        'dqn_ryu1.state_weights.h5f',
+        'dqn_cnn_ryu1.state_weights.h5f',
+        'dqn_cnn_ryu4.state_weights.h5f'
+    ]
+
+    state_paths = [
+        'ryu1.state',
+        'ryu1.state',
+        'ryu4.state'
+    ]
+
+    #for i in range(len(weight_paths)):
 
 
 if __name__ == "__main__":
