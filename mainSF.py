@@ -14,7 +14,7 @@ import os.path
 from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy
 from rl.memory import SequentialMemory
-from trainingMetrics import plot_reward, plot_wins, STATE_NAME
+from trainingMetrics import plot_reward, plot_wins
 
 ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 
@@ -68,23 +68,23 @@ def buildAgent(model, memory, policy, num_actions):
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
     return dqn
 
-def trainModel(env, dqn, state_path, weight_path):
-    dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, callbacks=[InfoCallbackTrain()], action_repetition=4)
+def trainModel(env, dqn, state, weight_path):
+    dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, callbacks=[InfoCallbackTrain(state)], action_repetition=4)
     dqn.save_weights(weight_path, overwrite=True)
 
-def testModel(env, dqn, num_episodes, state_path):
-    dqn.test(env, nb_episodes=num_episodes, visualize=True, callbacks=[InfoCallbackTest()])
+def testModel(env, dqn, num_episodes, state):
+    dqn.test(env, nb_episodes=num_episodes, visualize=True, callbacks=[InfoCallbackTest(state)])
 
 def main(mode):
 
-    print("\nState: ", STATE_NAME)
-    
-    env = retro.make(game=ENV_NAME, state=STATE_NAME, use_restricted_actions=retro.Actions.DISCRETE)
-    num_actions = env.action_space.n
-
     if mode == "train":
         
-        WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)
+        state = "ryu8guile.state"
+        print("\nState: ", state)
+
+        env = retro.make(game=ENV_NAME, state=state, use_restricted_actions=retro.Actions.DISCRETE)
+        num_actions = env.action_space.n
+        WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(state)
 
         if os.path.exists(WEIGHT_PATH):
             print("Loading weights from: ", WEIGHT_PATH, '\n')
@@ -94,12 +94,17 @@ def main(mode):
             (model, memory, policy) = buildModel(None, num_actions)
            
         dqn = buildAgent(model, memory, policy, num_actions)
-        trainModel(env, dqn, STATE_NAME, WEIGHT_PATH)
-        plot_wins(mode)
+        trainModel(env, dqn, state, WEIGHT_PATH)
+        plot_wins(mode, state)
 
     elif mode == "test":
+        
+        state = "ryu8guile.state"
+        print("\nState: ", state)
 
-        WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(STATE_NAME)
+        env = retro.make(game=ENV_NAME, state=state, use_restricted_actions=retro.Actions.DISCRETE)
+        num_actions = env.action_space.n
+        WEIGHT_PATH = 'weights/dqn_cnn_{}_weights.h5f'.format(state)
 
         if os.path.exists(WEIGHT_PATH):
             print("Loading weights from: ", WEIGHT_PATH, '\n')
@@ -109,34 +114,42 @@ def main(mode):
             (model, memory, policy) = buildModel(None, num_actions)
            
         dqn = buildAgent(model, memory, policy, num_actions)
-        testModel(env, dqn, 100, STATE_NAME)
-        plot_wins(mode)
+        testModel(env, dqn, 100, state)
+        plot_wins(mode, state)
 
     elif mode == "testscript":
         weightTest()
     else:
         print("No mode specified")
-
-    #WEIGHT_PATH = 'weights/dqn_cnn_ryu4.state_weights.h5f'.format(STATE_NAME)
     
     
-
-
 def weightTest():
 
     weight_paths = [
-        'dqn_ryu1.state_weights.h5f',
-        'dqn_cnn_ryu1.state_weights.h5f',
-        'dqn_cnn_ryu4.state_weights.h5f'
+        None,
+        'weights/dqn_cnn_ryu1.state_weights.h5f',
+        'weights/dqn_cnn_ryu4.state_weights.h5f'
     ]
 
     state_paths = [
-        'ryu1.state',
-        'ryu1.state',
-        'ryu4.state'
+        'ryu1guile.state',
+        'ryu2guile.state',
+        'ryu3guile.state',
+        'ryu4guile.state',
+        'ryu5guile.state'
     ]
 
-    #for i in range(len(weight_paths)):
+    for weight_path in weight_paths:
+        print("\nWEIGHTS: ", weight_path)
+        (model, memory, policy) = buildModel(weight_path, 126)
+
+        for state_path in state_paths:
+            print("STATE: ", state_path)
+            env = retro.make(game=ENV_NAME, state=state_path, use_restricted_actions=retro.Actions.DISCRETE)
+            dqn = buildAgent(model, memory, policy, 126)
+            testModel(env, dqn, 2, state_path)
+            env.close()
+
 
 
 if __name__ == "__main__":
