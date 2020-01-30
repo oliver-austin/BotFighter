@@ -62,18 +62,11 @@ def buildModel(weight_path, num_actions):
 
     return (model, memory, policy)
 
-def buildAgent(model, memory, policy, num_actions):
+def buildDQNAgent(model, memory, policy, num_actions):
     dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=num_actions, memory=memory, 
                     nb_steps_warmup=10000, target_model_update=1e-3, policy=policy, test_policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
     return dqn
-
-def trainModel(env, dqn, state, weight_path):
-    dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, callbacks=[InfoCallbackTrain(state)], action_repetition=4)
-    dqn.save_weights(weight_path, overwrite=True)
-
-def testModel(env, dqn, num_episodes, state):
-    dqn.test(env, nb_episodes=num_episodes, visualize=True, callbacks=[InfoCallbackTest(state)])
 
 def main(mode):
 
@@ -93,8 +86,9 @@ def main(mode):
             print("No weights found for current state.\n")
             (model, memory, policy) = buildModel(None, num_actions)
            
-        dqn = buildAgent(model, memory, policy, num_actions)
-        trainModel(env, dqn, state, WEIGHT_PATH)
+        dqn = buildDQNAgent(model, memory, policy, num_actions)
+        dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, callbacks=[InfoCallbackTrain(state)], action_repetition=4)
+        dqn.save_weights(WEIGHT_PATH, overwrite=True)
         plot_wins(mode, state)
 
     elif mode == "test":
@@ -113,12 +107,18 @@ def main(mode):
             print("No weights found for current state.\n")
             (model, memory, policy) = buildModel(None, num_actions)
            
-        dqn = buildAgent(model, memory, policy, num_actions)
-        testModel(env, dqn, 100, state)
+        dqn = buildDQNAgent(model, memory, policy, num_actions)
+        dqn.test(env, nb_episodes=100, visualize=True, callbacks=[InfoCallbackTest(state)])
         plot_wins(mode, state)
 
     elif mode == "testscript":
         weightTest()
+    elif mode == "plot":
+        plot_wins("test", "ryu1guile.state")
+        plot_wins("test", "ryu2guile.state")
+        plot_wins("test", "ryu3guile.state")
+        plot_wins("test", "ryu4guile.state")
+        plot_wins("test", "ryu5guile.state")
     else:
         print("No mode specified")
     
@@ -128,7 +128,7 @@ def weightTest():
     weight_paths = [
         None,
         'weights/dqn_cnn_ryu1.state_weights.h5f',
-        'weights/dqn_cnn_ryu4.state_weights.h5f'
+        'weights/dqn_cnn_ryu5.state_weights.h5f'
     ]
 
     state_paths = [
@@ -147,7 +147,7 @@ def weightTest():
             print("STATE: ", state_path)
             env = retro.make(game=ENV_NAME, state=state_path, use_restricted_actions=retro.Actions.DISCRETE)
             dqn = buildAgent(model, memory, policy, 126)
-            testModel(env, dqn, 2, state_path)
+            testModel(env, dqn, 10, state_path)
             env.close()
 
 
