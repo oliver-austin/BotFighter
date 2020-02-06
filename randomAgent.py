@@ -10,7 +10,7 @@ ENV_NAME = 'StreetFighterIISpecialChampionEdition-Genesis'
 state = 'rom.state'
 
 def main(nb_episodes):
-    env = retro.make(game=ENV_NAME, use_restricted_actions=retro.Actions.DISCRETE)
+    env = retro.make(game=ENV_NAME, state=state, use_restricted_actions=retro.Actions.DISCRETE)
     obs = env.reset()
     player_win = False
     episode = 0
@@ -30,7 +30,7 @@ def main(nb_episodes):
             obs = env.reset()
 
 
-            env.close()
+    env.close()
 
 
 if __name__ == "__main__":
