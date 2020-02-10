@@ -93,8 +93,7 @@ def main(mode):
 
     elif mode == "test":
         
-        # state = "ryu8guile.state"
-        state = "ryu1.state"
+        state = "ryu8guile.state"
         print("\nState: ", state)
 
         env = retro.make(game=ENV_NAME, state=state, use_restricted_actions=retro.Actions.DISCRETE)
