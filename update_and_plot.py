@@ -52,7 +52,7 @@ def animate(frame, ann_list):
     for i, b in enumerate(easy_losses):
         b.set_height(easy[1])
 
-    label = "{:.2f}".format(easy[0]+easy[1])
+    label = "{:.2f}%".format(easy[0]+easy[1])
     ann = plt.annotate(label,
                  (1, easy[0]+easy[1]),
                  textcoords="offset points",
@@ -68,7 +68,7 @@ def animate(frame, ann_list):
     for i, b in enumerate(normal_losses):
         b.set_height(normal[0])
 
-    label = "{:.2f}".format(normal[0] + normal[1])
+    label = "{:.2f}%".format(normal[0] + normal[1])
     ann = plt.annotate(label,
                        (2, normal[0] + normal[1]),
                        textcoords="offset points",
@@ -84,7 +84,7 @@ def animate(frame, ann_list):
     for i, b in enumerate(hard_losses):
         b.set_height(hard[1])
 
-    label = "{:.2f}".format(hard[0]+hard[1])
+    label = "{:.2f}%".format(hard[0]+hard[1])
     ann = plt.annotate(label,
                  (3, hard[0]+hard[1]),
                  textcoords="offset points",
