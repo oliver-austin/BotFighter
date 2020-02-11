@@ -1,6 +1,6 @@
 import sys
-#sys.path.append("O:\Oliver\Anaconda\envs\gym\Lib\site-packages")
-sys.path.append("C:/Users/Oliver/Anaconda3/envs/gym/Lib/site-packages")
+sys.path.append("O:\Oliver\Anaconda\envs\gym\Lib\site-packages")
+#sys.path.append("C:/Users/Oliver/Anaconda3/envs/gym/Lib/site-packages")
 import argparse
 import retro
 #import h5py
