@@ -2,7 +2,7 @@ import tensorflow as tf
 from trainingMetrics import save_wins_showcase
 
 
-class InfoCallbackTest(tf.keras.callbacks.Callback):
+class InfoCallbackShowcase(tf.keras.callbacks.Callback):
     def __init__(self, state):
         self.player_win = False
         self.state = state
