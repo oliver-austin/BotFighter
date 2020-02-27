@@ -63,3 +63,13 @@ def save_wins(player_win, mode, state):
     else:
         win_history = [player_win]
     np.save('win-history/{}_win_history_{}.npy'.format(state, mode), win_history)
+
+
+def save_wins_showcase(player_win, state):
+    if os.path.exists('showcase/{}_showcase.npy'.format(state)):
+        win_history = np.load('showcase/{}_showcase.npy'.format(state))
+        win_history = [win_history[0] + player_win, win_history[1]+(1-player_win)]
+    else:
+        win_history = [player_win, 1-player_win]
+    np.save('showcase/{}_showcase.npy'.format(state), win_history)
+
