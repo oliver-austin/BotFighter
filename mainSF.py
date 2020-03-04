@@ -64,7 +64,7 @@ def buildModel(weight_path, num_actions):
 
 def buildDQNAgent(model, memory, policy, num_actions):
     dqn = DQNAgent(processor=CNNProcessor(), model=model, nb_actions=num_actions, memory=memory, 
-                    nb_steps_warmup=10000, target_model_update=1e-3, policy=policy, test_policy=policy)
+                    nb_steps_warmup=1000, target_model_update=1e-3, policy=policy, test_policy=policy)
     dqn.compile(Adam(lr=1e-3), metrics=['mae'])
     return dqn
 
@@ -87,7 +87,7 @@ def main(mode):
             (model, memory, policy) = buildModel(None, num_actions)
            
         dqn = buildDQNAgent(model, memory, policy, num_actions)
-        dqn.fit(env, nb_steps=1000000, visualize=False, verbose=2, callbacks=[InfoCallbackTrain(state)], action_repetition=4)
+        dqn.fit(env, nb_steps=1000000, nb_episodes=100, visualize=False, verbose=2, callbacks=[InfoCallbackTrain(state)], action_repetition=4)
         dqn.save_weights(WEIGHT_PATH, overwrite=True)
         plot_wins(mode, state)
 
@@ -110,6 +110,41 @@ def main(mode):
         dqn = buildDQNAgent(model, memory, policy, num_actions)
         dqn.test(env, nb_episodes=100, visualize=True, callbacks=[InfoCallbackTest(state)])
         plot_wins(mode, state)
+
+    elif mode == "multitrain":
+
+        WEIGHT_PATH = 'weights/feb3-ryu-multi-345.h5f'
+        
+        if os.path.exists(WEIGHT_PATH):
+            print("Loading weights from: ", WEIGHT_PATH, '\n')
+            (model, memory, policy) = buildModel(WEIGHT_PATH, 126)
+        else:
+            print("No weights found at path: ", WEIGHT_PATH, "\n")
+            return
+        
+        state_paths = [
+            'ryu3blanka.state',
+            'ryu4blanka.state',
+            'ryu5blanka.state',
+            'ryu3chunli.state',
+            'ryu4chunli.state',
+            'ryu5chunli.state',
+            'ryu3dhalsim.state',
+            'ryu4dhalsim.state',
+            'ryu5dhalsim.state',
+            'ryu3ehonda.state',
+            'ryu4ehonda.state',
+            'ryu5ehonda.state'
+            ]
+
+        for i in range(len(state_paths)):
+            STATE_PATH = state_paths[i]
+            print("\n\nTRAINING ON STATE:{}".format(STATE_PATH), "\n")
+            env = retro.make(game=ENV_NAME, state=STATE_PATH, use_restricted_actions=retro.Actions.DISCRETE)
+            dqn = buildDQNAgent(model, memory, policy, 126)
+            dqn.fit(env, nb_steps=999999999, nb_episodes=200, visualize=False, verbose=2, callbacks=[InfoCallbackTrain(STATE_PATH)], action_repetition=4)
+            dqn.save_weights(WEIGHT_PATH, overwrite=True)
+            env.close()
 
     elif mode == "testscript":
         weightTest()
